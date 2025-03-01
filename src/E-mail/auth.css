@@ -1,0 +1,120 @@
+/* Auth.css */
+
+/* General container for the authentication forms */
+.auth-container {
+  width: 100%;
+  max-width: 450px;
+  margin: 50px auto;
+  padding: 40px;
+  background-color: #ffffff;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  font-family: 'Roboto', sans-serif;
+  text-align: center;
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+/* Hover effect for the form container */
+.auth-container:hover {
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.2);
+}
+
+h2 {
+  color: #333;
+  font-size: 2.4rem !important;
+  margin-bottom: 30px !important;
+  font-weight: 600 !important;
+}
+
+/* Form styling */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Input field styles */
+input {
+  padding: 15px !important;
+  font-size: 1.1rem;
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
+  background-color: #fafafa;
+  transition: all 0.3s ease;
+  outline: none;
+  color: #333;
+}
+
+input:focus {
+  border-color: #007bff;
+  background-color: #ffffff;
+}
+
+input::placeholder {
+  color: #aaa;
+}
+
+/* Button styles */
+button {
+  padding: 15px;
+  font-size: 1.2rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+  background-color: #0056b3;
+  transform: translateY(-3px);
+}
+
+button:active {
+  background-color: #004085;
+  transform: translateY(0);
+}
+
+/* Error message styling */
+.error {
+  color: #ff4d4d;
+  font-size: 0.9rem;
+  margin-top: 5px;
+  text-align: left;
+}
+
+/* Link to toggle between login and signup pages */
+.link {
+  margin-top: 25px;
+  font-size: 1rem;
+  color: #007bff;
+  font-weight: 500;
+}
+
+.link a {
+  text-decoration: none;
+  color: inherit;
+  font-weight: 600;
+}
+
+.link a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive Design: Adjustments for small screens */
+@media (max-width: 600px) {
+  .auth-container {
+    padding: 25px;
+    max-width: 90%;
+  }
+
+  h2 {
+    font-size: 2rem;
+  }
+
+  input, button {
+    font-size: 1rem;
+  }
+}
