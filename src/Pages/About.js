@@ -5,12 +5,11 @@ const About = () => {
     <div className='about'>
       <h2>About Us</h2>
       <p id="about-text">
-        Welcome to <strong>ZOKSH store</strong>! We believe that style starts
+        Welcome to <strong>ZOKSH store!</strong><br /> We believe that style starts
         with the details, which is why we offer a carefully curated collection
         of trendy clothing that combines quality, elegance, and comfort.
         <br />
-        Our journey began in SOMEPLACE
-        <strong> 2014</strong> with a clear
+        Our journey began with a clear
         vision: to provide stylish, high-quality fashion at affordable prices,
         along with a seamless and enjoyable online shopping experience.
         <br />
@@ -25,7 +24,7 @@ const About = () => {
         ✔ Fast delivery right to your doorstep
         <br />
         We’re here to help you shine on every occasion! Thank you for choosing
-        <strong> ZOKSH store</strong>, and we hope you enjoy your shopping
+        <strong> ZOKSH store,</strong> and we hope you enjoy your shopping
         experience with us.
         <br />
         📩 <strong>Contact us </strong><Link to="/contact">By clicking here</Link>

@@ -8,6 +8,8 @@ import jacketImg from '../imgs/products/Jackets/JacketTempleat.jpeg';
 import pulloverImg from '../imgs/products/Pullovers/PulloverTempleat.jpeg';
 import sweatshirtImg from '../imgs/products/Sweatshirts/PulloverTempleat.jpeg';
 
+import './home-page.css';
+
 function HomePage({ onMakeFilter }) {
   const imgs = {
     'Shirts': shirtsImg,

@@ -1,6 +1,17 @@
 import './footer.css';
+import { useState, useEffect } from 'react';
 
 const Footer = () => {
+  const [data, setData] = useState(null);
+  useEffect(() => {
+    fetch('http://localhost/zoksh-store/src/PHP/back.php', {
+      method: 'POST',
+      body: JSON.stringify({
+        type: 'getLinks'
+      })
+    }).then(res => res.json())
+      .then(json => {setData(json);console.log(json )});
+  }, [])
   return (
     <footer>
       <div className="copy-right">
@@ -10,36 +21,17 @@ const Footer = () => {
       </div>
       <div className="my-links">
         <ul>
-          <li>
-            <a href="https://www.facebook.com/" target="blank">
-              <i className="fa-brands fa-facebook"></i>
-            </a>
-          </li>
-          <li>
-            <a href="https://twitter.com/" target="blank">
-              <i className="fa-brands fa-twitter"></i>
-            </a>
-          </li>
-          <li>
-            <a href="https://www.instagram.com/" target="blank">
-              <i className="fa-brands fa-instagram"></i>
-            </a>
-          </li>
-          <li>
-            <a href="https://www.tiktok.com/" target="blank">
-              <i className="fa-brands fa-tiktok"></i>
-            </a>
-          </li>
-          <li>
-            <a href="https://www.discord.com/" target="blank">
-              <i className="fa-brands fa-discord"></i>
-            </a>
-          </li>
-          <li>
-            <a href="https://www.github.com/" target="blank">
-              <i className="fa-brands fa-github"></i>
-            </a>
-          </li>
+          {data &&
+            data.map((e, i) => {
+              return(
+                <li key={i}>
+                  <a href={e.link} target='blank'>
+                    <i className={e.element}></i>
+                  </a>
+                </li>
+              )
+            })
+          }
         </ul>
       </div>
     </footer>

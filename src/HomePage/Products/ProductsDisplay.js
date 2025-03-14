@@ -1,7 +1,9 @@
 import { useState } from "react";
 import Products from "./Products";
+import ProductShowCase from "./ProductShowCase";
 
 const DisplayProducts = ({ filter }) => {
+
   const sweatshirts = require.context(
     "../../imgs/products/Sweatshirts/Sweatshirts",
     false,
@@ -27,8 +29,6 @@ const DisplayProducts = ({ filter }) => {
     false,
     /\.(png|jpe?g|gif)$/
   );
-  const productsImgs = [sweatshirts, pullovers, jackets, hoodies, shirts];
-
   const productsImgsObj = {
     Sweatshirts: sweatshirts,
     Pullovers: pullovers,
@@ -36,7 +36,6 @@ const DisplayProducts = ({ filter }) => {
     Jackets: jackets,
     Shirts: shirts,
   };
-
   const renderProducts = (category) => {
     const images = productsImgsObj[category];
     return images.keys().map((imagePath, index) => {
@@ -53,40 +52,22 @@ const DisplayProducts = ({ filter }) => {
   };
   const chooseProduct = (product) => {
     setSelectedProduct(product);
-  }
+  };
   const hideProductCase = () => {
+    console.log(selectedProduct);
     setSelectedProduct(null);
-  }
+  };
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const productsImgs = [sweatshirts, pullovers, jackets, hoodies, shirts];
 
   return (
     <> 
-      {selectedProduct?
-        <div className="product-show-case bg-dark">
-          <div className="product-window">
-            <div className="cross" onClick={hideProductCase}>
-              <span className="r"></span>
-              <span className="l"></span>
-            </div>
-            <div className="imgs">
-              <div className="selected-img">
-              
-              </div>
-              <div className="product-imgs">
-                
-              </div>
-            </div>
-            <span className="line-separator"></span>
-            <div className="product-disc">
-              <p></p>
-            </div>
-            <div className="btns-cont">
-              <div className="buy">Buy now</div>
-              <div className="bskt">Add to basket</div>
-            </div>
-          </div>
-        </div>
-        :''}
+      {selectedProduct &&
+        <ProductShowCase
+          onClose={hideProductCase}
+
+          />
+      }
       {filter === "Choose filter"
         ? productsImgs.map((element) => {
             return element.keys().map((e, index) => {

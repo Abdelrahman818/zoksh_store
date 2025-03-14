@@ -1,9 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import LogoutPage from "../../E-mail/Logout";
+
+import './nav-bar.css';
 
 const NavBar = () => {
   const [none, setNone] = useState(true);
   const [hide, setHide] = useState(true);
+  const [loggedIn, setLoggedIn] = useState(true);
+  const [logoutConf, setLogoutConf] = useState(false);
 
   const toggleMore = () => {
     none ? showMore() : hideMore();
@@ -16,6 +21,15 @@ const NavBar = () => {
     setTimeout(() => setNone(true), 300);
     setHide(true);
   };
+  const loginCheck = () => {
+    if (localStorage.getItem('logged_in')) setLoggedIn(true);
+    else setLoggedIn(false);
+  };
+  const logout = () => {
+    toggleMore();
+    setLogoutConf(true);
+  }
+  useEffect(() => loginCheck(), []);
 
   return (
     <nav>
@@ -53,9 +67,16 @@ const NavBar = () => {
             <Link to="/contact">
               <li onClick={toggleMore}>Contact us</li>
             </Link>
-            <Link to="/login">
-              <li onClick={toggleMore}>Login</li>
-            </Link>
+            {loggedIn ?
+              (
+                <li className="danger" onClick={logout}>Logout</li>
+              ):
+              (
+                <Link to="/login">
+                  <li onClick={toggleMore}>Login</li>
+                </Link>
+              )
+            }
           </ul>
         </div>
         <div className="logo">LOGO</div>
@@ -68,6 +89,7 @@ const NavBar = () => {
           </div>
         </div>
       </div>
+      {logoutConf&&<LogoutPage onCancel={setLogoutConf} />}
     </nav>
   );
 };
