@@ -1,4 +1,4 @@
-import { useState } from "react";
+
 import SectionOne from "../HomePage/SectionOne";
 import AvailbleProducts from "../HomePage/Products/AvailbleProducts";
 
@@ -21,7 +21,7 @@ function HomePage({ onMakeFilter }) {
 
   return (
     <>
-      <main>
+      <main className='home-page'>
         <SectionOne />
         <section className="products">
           <h2>Products we sell</h2>

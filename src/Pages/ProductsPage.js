@@ -22,17 +22,13 @@ const ProductsPage = (props) => {
         <div className="filter">
           <div className="selected-filter" onClick={toggleCollapse}>{ currFilter }</div>
           <ul className={isCollapsed?"collapsed":undefined}>
+            <li onClick={(e) => changeFilter('Choose filter')}>All</li>
             {products.map((e, index) => (
               <li key={index} onClick={() => changeFilter(e)}>
                 { e }
               </li>
             ))}
           </ul>
-        </div>
-        <div className="displaying">
-          <span className="new">New</span>
-          <span className="featured">Featured</span>
-          <span className="all" onClick={() => setCurrFilter('Choose filter')}>All</span>
         </div>
       </div>
       <section className="products page">

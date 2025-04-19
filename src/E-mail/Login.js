@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+
+import Loading from '../Components/Loading/Loading';
+
 import './auth.css';
 
 const Login = () => {
 
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -30,8 +34,9 @@ const Login = () => {
         pwd: formData.password,
       }),
     });
-
     const json = await response.json();
+    console.log(json);
+    setLoading(false);
     return json;
   };
   const validate = async () => {
@@ -41,26 +46,21 @@ const Login = () => {
     if (!formData.name) {
       newErrors.name = 'Username is required';
       valid = false;
-    }
-
-    if (!formData.password) {
+    } if (!formData.password) {
       newErrors.password = 'Password is required';
       valid = false;
-    }
-
-    if (valid) {
+    } if (valid) {
+      setLoading(true);
       const response = await sendData();
 
-      if (response.length === 0) {
-        newErrors.name = 'The name is invalid';
-      } else {
-        if (response[0].pwd !== formData.password) {
-          newErrors.password = 'Password is invalid';
-        } else {
-          saveUserInfos(response[0].name);
-          navigate('/');
-          window.location.reload();
-        }
+      if (response.msg === 'invPwd') {
+        newErrors.password = 'Invalid password';
+      } else if (response.msg === 'invUsr') {
+        newErrors.name = 'User name is not valid';
+      } else if (response.msg === 'loginSuccess') {
+        localStorage.setItem('authToken', response.token);
+        navigate('/');
+        window.location.reload();
       }
     }
     setErrors(newErrors);
@@ -69,35 +69,36 @@ const Login = () => {
     e.preventDefault();
     await validate();
   };
-  const saveUserInfos = (userName) => {
-    localStorage.setItem('logged_in', userName)
-  };
 
   return (
-    <div className="auth-container">
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="name"
-          placeholder="Username"
-          value={formData.name}
-          onChange={handleInputChange}
-        />
-        {errors.name && <p className="error">{errors.name}</p>}
+    <>
+      { loading && <Loading /> }
+      <div className="auth-container">
+        <h2>Login</h2>
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            name="name"
+            placeholder="Username"
+            value={formData.name}
+            onChange={handleInputChange}
+          />
+          {errors.name && <p className="error">{errors.name}</p>}
 
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={handleInputChange}
-        />
-        {errors.password && <p className="error">{errors.password}</p>}
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={formData.password}
+            onChange={handleInputChange}
+          />
+          {errors.password && <p className="error">{errors.password}</p>}
 
-        <button type="submit">Login</button>
-      </form>
-    </div>
+          <button type="submit">Login</button>
+        </form>
+        <Link to={'/signup'}><span className='new-acc'>Create new account</span></Link>
+      </div>
+    </>
   );
 };
 

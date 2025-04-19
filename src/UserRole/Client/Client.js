@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import { useState } from "react";
 
 import HomePage from "../../HomePage/HomePage";
@@ -9,12 +9,14 @@ import About from "../../Pages/About";
 import Location from "../../Pages/Location";
 import Signup from "../../E-mail/Signup";
 import Login from "../../E-mail/Login";
+import NavBar from "../../Components/NavBar/Navbar"
 
 const Client = () => {
   const [filter, setFilter] = useState("Choose filter");
   const onMakeFilter = (f) => setFilter(f);
   return (
-    <Router>
+    <>
+      <NavBar />
       <Routes>
         <Route
           path="/"
@@ -28,7 +30,7 @@ const Client = () => {
         <Route path="/login" element={<Login />} />
       </Routes>
       <Footer />
-    </Router>
+    </>
   );
 }
 

@@ -1,29 +1,24 @@
 const ClientsMsgs = (props) => {
   return (
-    <div className="msg-cont d-flex col">
-      <div className="date">
-        <span>Date: {props.date}</span>
+    <>
+      <div className="msg-cont d-flex col">
+        <div className="msg-header d-flex space-between">
+          <span className="msg-date">Date: {props.date}</span>
+          <span className="msg-subj">Subject: {props.subj}</span>
+        </div>
+
+        <div className="msg-user-info">
+          <p className="user-name">Name: <strong>{props.name}</strong></p>
+          <p className="user-phone">Phone: <strong>{props.phone}</strong></p>
+          <p className="user-email">Email: <strong>{props.email}</strong></p>
+        </div>
+
+        <div className="msg-body">
+          <p>{props.msg}</p>
+        </div>
       </div>
-      <div className="name d-flex row">
-        <p className="user-name">Name: {props.uName}</p>
-        {props.name !== props.uName&&<p className="name">({props.name})</p>}
-      </div>
-      <div className="phone d-flex row">
-        <span>Phone: </span>
-        <p className="user-phone">{props.uPhone}</p>
-        {props.phone && props.phone !== props.uPhone && <p className="phone">/{props.phone}</p>}
-      </div>
-      <div className="email">
-        <span>E-mail: {props.email}</span>
-      </div>
-      <div className="subj">
-        <span>Subject: {props.subj}</span>
-      </div>
-      <div className="msg">
-        <span>{props.msg}</span>
-      </div>
-    </div>
+    </>
   );
-}
+};
 
 export default ClientsMsgs;

@@ -4,7 +4,7 @@ const LogoutPage = ({ onCancel }) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem("logged_in");
+    localStorage.removeItem("authToken");
     window.location.reload();
     navigate("/");
     onCancel(false);

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import LogoutPage from "../../E-mail/Logout";
 
@@ -7,7 +7,6 @@ import './nav-bar.css';
 const NavBar = () => {
   const [none, setNone] = useState(true);
   const [hide, setHide] = useState(true);
-  const [loggedIn, setLoggedIn] = useState(true);
   const [logoutConf, setLogoutConf] = useState(false);
 
   const toggleMore = () => {
@@ -21,21 +20,13 @@ const NavBar = () => {
     setTimeout(() => setNone(true), 300);
     setHide(true);
   };
-  const loginCheck = () => {
-    if (localStorage.getItem('logged_in')) setLoggedIn(true);
-    else setLoggedIn(false);
-  };
   const logout = () => {
     toggleMore();
     setLogoutConf(true);
-  }
-  useEffect(() => loginCheck(), []);
+  };
 
   return (
     <nav>
-      <div className="welcome-msg">
-        <span>WELCOME TO OUR STORE</span>
-      </div>
       <div className="nav-content">
         <div className="more-cont">
           <div
@@ -67,7 +58,7 @@ const NavBar = () => {
             <Link to="/contact">
               <li onClick={toggleMore}>Contact us</li>
             </Link>
-            {loggedIn ?
+            {localStorage.getItem('authToken') ?
               (
                 <li className="danger" onClick={logout}>Logout</li>
               ):
@@ -79,11 +70,10 @@ const NavBar = () => {
             }
           </ul>
         </div>
-        <div className="logo">LOGO</div>
+        <div className="welcome-msg">
+          <span>WELCOME TO OUR STORE</span>
+        </div>
         <div className="cont">
-          <div className="search">
-            <i className="fa-solid fa-magnifying-glass"></i>
-          </div>
           <div className="basket">
             <i className="fa-solid fa-basket-shopping"></i>
           </div>
