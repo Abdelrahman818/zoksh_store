@@ -29,6 +29,7 @@ body {
 	background-color: #fff;
 	min-height: 100vh;
 	font-family: 'Poppins', sans-serif;
+	overflow: auto
 }
 [hide] {
 	opacity: 0 !important;

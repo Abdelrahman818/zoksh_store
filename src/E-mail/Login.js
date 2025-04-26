@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
+import api from "../config";
 import Loading from '../Components/Loading/Loading';
 
 import './auth.css';
@@ -23,7 +24,7 @@ const Login = () => {
     });
   };
   const sendData = async () => {
-    const response = await fetch('http://localhost/zoksh-store/src/PHP/back.php', {
+    const response = await fetch(api, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -35,7 +36,6 @@ const Login = () => {
       }),
     });
     const json = await response.json();
-    console.log(json);
     setLoading(false);
     return json;
   };

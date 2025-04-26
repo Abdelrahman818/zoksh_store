@@ -1,90 +1,73 @@
-import { useState } from "react";
-import Products from "./Products";
+import { useState, useEffect } from "react";
 import ProductShowCase from "./ProductShowCase";
+import Loading from "../../Components/Loading/Loading";
+import api from "../../config";
 
 const DisplayProducts = ({ filter }) => {
+  const [products, setProducts] = useState([]);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const sweatshirts = require.context(
-    "../../imgs/products/Sweatshirts/Sweatshirts",
-    false,
-    /\.(png|jpe?g|gif)$/
-  );
-  const pullovers = require.context(
-    "../../imgs/products/Pullovers/Pullovers",
-    false,
-    /\.(png|jpe?g|gif)$/
-  );
-  const hoodies = require.context(
-    "../../imgs/products/Hoodies/Hoodies",
-    false,
-    /\.(png|jpe?g|gif)$/
-  );
-  const jackets = require.context(
-    "../../imgs/products/Jackets/Jackets",
-    false,
-    /\.(png|jpe?g|gif)$/
-  );
-  const shirts = require.context(
-    "../../imgs/products/Shirts/Shirts",
-    false,
-    /\.(png|jpe?g|gif)$/
-  );
-  const productsImgsObj = {
-    Sweatshirts: sweatshirts,
-    Pullovers: pullovers,
-    Hoodies: hoodies,
-    Jackets: jackets,
-    Shirts: shirts,
-  };
-  const renderProducts = (category) => {
-    const images = productsImgsObj[category];
-    return images.keys().map((imagePath, index) => {
-      return (
-        <Products
-          key={index}
-          imgDir={images(imagePath)}
-          productDisc={"Buy this product now"}
-          price={"10,000"}
-          onSelect={chooseProduct}
-        />
-      );
-    });
-  };
-  const chooseProduct = (product) => {
+  const showProduct = (product) => {
     setSelectedProduct(product);
+    setTimeout(() => setModalVisible(true), 10);
   };
   const hideProductCase = () => {
-    console.log(selectedProduct);
-    setSelectedProduct(null);
+    setModalVisible(false);
+    setTimeout(() => setSelectedProduct(null), 300);
   };
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const productsImgs = [sweatshirts, pullovers, jackets, hoodies, shirts];
+  useEffect(() => {
+    setLoading(true);
+    fetch(api, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ type: "getProducts" }),
+    })
+      .then((res) => res.json())
+      .then(setProducts)
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
-    <> 
-      {selectedProduct &&
-        <ProductShowCase
-          onClose={hideProductCase}
-
+    <>
+      { loading && <Loading /> }
+      {selectedProduct && (
+        <div className={`modal-wrapper ${modalVisible ? 'fade-in' : 'fade-out'}`}>
+          <ProductShowCase
+            onClose={hideProductCase}
+            data={selectedProduct}
           />
-      }
-      {filter === "Choose filter"
-        ? productsImgs.map((element) => {
-            return element.keys().map((e, index) => {
-              return (
-                <Products
-                  key={index}
-                  imgDir={element(e)}
-                  productDisc={"Please buy them all"}
-                  price={"10,000"}
-                  onSelect={chooseProduct}
-                />
-              );
-            });
-          })
-        : filter in productsImgsObj
-        ? renderProducts(filter)
-        : null}
+        </div>
+      )}
+      {products
+        .filter((e) => {
+          if (!filter || filter === "") return true;
+          return e.product_type.toLowerCase() === filter;
+        }).map((e) => {
+        return (
+          <div
+            className="product"
+            key={e.id}
+            onClick={() => showProduct(e)}
+          >
+            <div className="product-img">
+              <img
+                src={`http://localhost/zoksh-store/src/PHP/${e.temp}`}
+                alt="No img"
+              />
+            </div>
+            <div className="product-disc">
+              <span>{e.name}</span>
+            </div>
+            <div className="product-price">
+              <span>{e.price} LE</span>
+            </div>
+          </div>
+        );
+      })}
     </>
   );
 };

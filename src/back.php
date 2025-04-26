@@ -368,10 +368,10 @@
     }
   }
   function DBConnection($sql, $bindings=[]) {
-    $host = "localhost";
-    $dbname = "zoksh_store";
-    $username = "root";
-    $password = "";
+    $host = "zoksh.rf.gd";
+    $dbname = "if0_38811111_zoksh_store";
+    $username = "if0_38811111";
+    $password = "DU9OhrTVWyOY";
 
     try {
       $db = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);

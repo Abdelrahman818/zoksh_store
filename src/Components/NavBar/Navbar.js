@@ -46,7 +46,7 @@ const NavBar = () => {
             <Link to="/">
               <li onClick={toggleMore}>Home</li>
             </Link>
-            <Link to="/products">
+            <Link to="/products-page">
               <li onClick={toggleMore}>Our products</li>
             </Link>
             <Link to="/about">
@@ -72,11 +72,6 @@ const NavBar = () => {
         </div>
         <div className="welcome-msg">
           <span>WELCOME TO OUR STORE</span>
-        </div>
-        <div className="cont">
-          <div className="basket">
-            <i className="fa-solid fa-basket-shopping"></i>
-          </div>
         </div>
       </div>
       {logoutConf&&<LogoutPage onCancel={setLogoutConf} />}

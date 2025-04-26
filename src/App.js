@@ -4,13 +4,14 @@ import { useNavigate } from "react-router-dom";
 import Client from "./UserRole/Client/Client";
 import Admin from "./UserRole/Admin/Admin";
 import Loading from "./Components/Loading/Loading";
+import api from "./config";
 
 function App() {
   const navigate = useNavigate();
   const [role, setRole] = useState('');
   const [expired, setExpired] = useState(false);
   const [userName, setUserName] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const handleLogout = () => {
     localStorage.removeItem('authToken');
@@ -23,7 +24,7 @@ function App() {
     let ursRole;
 
     if (token) {
-      fetch("http://localhost/zoksh-store/src/PHP/back.php", {
+      fetch(api, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -34,7 +35,6 @@ function App() {
         }),
       }).then((res) => res.json())
         .then((json) => {
-          console.log(json);
           if (json.msg === 'invalidToken') {
             if (json.error === 'Expired token') {
               setExpired(true);
@@ -42,11 +42,13 @@ function App() {
               localStorage.removeItem('authToken');
             }
           }
+          if (json.role === 'adm') {
+            document.querySelector('html').style.overflow = 'hidden';
+          }
           setRole(json.role);
           setUserName(json.username);
         })
-        .catch((err) => {
-          console.error("Token check failed", err);
+        .catch(() => {
           setRole('usr');
         })
         .finally(setLoading(false));

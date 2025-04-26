@@ -1,21 +1,25 @@
-import React, { useState } from "react";
-
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Loading from '../Components/Loading/Loading';
+import api from "../config";
 
 import "./contact.css";
 
 const ContactPage = () => {
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
   const [errs, setErrs] = useState({
     nameErr: false,
     phoneErr: false,
     msg: false,
   });
   const [formData, setFormData] = useState({
-    name: "",
+    type: "contact",
+    user: "",
     phone: "",
-    subject: "",
-    message: "",
+    subj: "",
+    msg: "",
   });
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -35,11 +39,11 @@ const ContactPage = () => {
     let phoneValidation;
     let msgValidation;
 
-    if (formData.name.match(nameRe)) nameValidation = false;
+    if (formData.user.match(nameRe)) nameValidation = false;
     else nameValidation = true;
     if (formData.phone.match(phoneRe)) phoneValidation = false;
     else phoneValidation = true;
-    if (formData.message.match(msgRe)) msgValidation = false;
+    if (formData.msg.match(msgRe)) msgValidation = false;
     else msgValidation = true;
 
     obj.name = nameValidation;
@@ -47,13 +51,13 @@ const ContactPage = () => {
     obj.msg = msgValidation;
 
     setErrs(obj);
-    if (nameValidation && phoneValidation && msgValidation) {
-      setLoading(true);
+    if (!nameValidation && !phoneValidation && !msgValidation) {
       sendData();
     }
-    console.log(errs);
   };
   const sendData = () => {
+    setLoading(true);
+
     const today = new Date();
     const day = String(today.getDate()).padStart(2, "0");
     const month = String(today.getMonth() + 1).padStart(2, "0");
@@ -61,21 +65,21 @@ const ContactPage = () => {
     const hours = String(today.getHours()).padStart(2, "0");
     const minutes = String(today.getMinutes()).padStart(2, "0");
     const date = `${day}/${month}/${year},${hours}:${minutes}`;
-    fetch('http://localhost/zoksh-store/src/PHP/back.php', {
+
+    fetch(api, {
       method: "POST",
-      body: JSON.stringify({
-        type: "contact",
-        name: formData.name,
-        phone: formData.phone,
-        subj: formData.subject,
-        msg: formData.message,
-        date: date,
-      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({...formData, date}),
     })
       .then((res) => res.json())
-      .then((json) => console.log(json))
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false);
+        navigate('/');
+      });
   };
+
   return (
     <>
       { loading && <Loading /> }
@@ -85,8 +89,8 @@ const ContactPage = () => {
           <form onSubmit={handleSubmit}>
             <input
               type="text"
-              name="name"
-              value={formData.name}
+              name="user"
+              value={formData.user}
               onChange={handleChange}
               placeholder="Your Name"
               required
@@ -102,20 +106,20 @@ const ContactPage = () => {
             />
             {errs.phone && <div className="err">This phone is invalid</div>}
             <select
-              name="subject"
-              value={formData.subject}
+              name="subj"
+              value={formData.subj}
               onChange={handleChange}
               required
             >
-              <option value="">Select a Subject</option>
+              <option value="" disabled>Select a Subject</option>
               <option value="Product Inquiry">Product Inquiry</option>
               <option value="Order Status">Order Status</option>
               <option value="Returns & Exchanges">Returns & Exchanges</option>
               <option value="General Feedback">General Feedback</option>
             </select>
             <textarea
-              name="message"
-              value={formData.message}
+              name="msg"
+              value={formData.msg}
               onChange={handleChange}
               placeholder="Your Message"
               required

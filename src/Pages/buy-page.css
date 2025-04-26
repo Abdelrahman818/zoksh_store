@@ -1,0 +1,111 @@
+.buy-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(to right, #5f5b52ee 10%, #13130eee);
+  padding: 2rem;
+}
+
+.buy-form {
+  background-color: #1c1c1c;
+  color: #fff;
+  padding: 2rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 0 15px #00000066;
+  max-width: 500px;
+  width: 100%;
+  position: relative;
+}
+
+.buy-form h2 {
+  margin-bottom: 1rem;
+  font-size: 1.8rem;
+  text-align: center;
+  color: #f5f5f5;
+}
+
+.final-price {
+  display: block;
+  text-align: center;
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  color: #e0dcbc;
+}
+
+.buy-infos {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.buy-infos input {
+  padding: 0.8rem 1rem;
+  border-radius: 0.8rem;
+  border: none;
+  background-color: #2a2a2a;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.buy-infos input:focus {
+  outline: 2px solid #8e8c84;
+  background-color: #353535;
+}
+
+.submit-btn {
+  padding: 1rem;
+  margin-top: 1rem;
+  background-color: #ffd54f;
+  color: #000;
+  border: none;
+  border-radius: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.submit-btn:hover {
+  background-color: #e2b935;
+}
+
+.buying-infos {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
+
+.infos {
+  display: none;
+  position: absolute;
+  top: 20px;
+  left: 0;
+  background-color: #333;
+  color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 14px;
+  width: 250px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.buying-infos:hover .infos {
+  display: block;
+}
+
+.buying-infos i {
+  font-size: 18px;
+  color: #ffd54f;
+  cursor: pointer;
+}
+
+.buying-infos .infos:before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 20px;
+  border-width: 8px;
+  border-style: solid;
+  border-color: transparent transparent #333 transparent;
+}

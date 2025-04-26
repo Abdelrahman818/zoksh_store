@@ -1,34 +1,58 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import DisplayProducts from "../HomePage/Products/ProductsDisplay";
+import Loading from "../Components/Loading/Loading";
+import api from "../config";
 
 import './products-page.css';
 
-const ProductsPage = (props) => {
+const ProductsPage = ({ filter }) => {
 
-  const products = ["Shirts", "Hoodies", "Jackets", "Pullovers", "Sweatshirts"];
-  const [currFilter, setCurrFilter] = useState(props.filter);
-  const toggleCollapse = () => setIsCollapsed(!isCollapsed);
+  const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState([]);
+  const [currFilter, setCurrFilter] = useState(filter);
   const [isCollapsed, setIsCollapsed] = useState(true);
   
+  const toggleCollapse = () => setIsCollapsed(!isCollapsed);
+  const capitalizeFirst = (str) => {
+    if (!str) return "";
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  }
   const changeFilter = (e) => {
     setCurrFilter(e);
     toggleCollapse();
-  }
+  };
+  useEffect(() => {
+    fetch(api, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ type: "getTypes"}),
+    })
+      .then(res => res.json())
+      .then(setCategories)
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
     <>
+      { loading && <Loading /> }
       <div className="products-control">
         <div className="filter">
-          <div className="selected-filter" onClick={toggleCollapse}>{ currFilter }</div>
-          <ul className={isCollapsed?"collapsed":undefined}>
-            <li onClick={(e) => changeFilter('Choose filter')}>All</li>
-            {products.map((e, index) => (
-              <li key={index} onClick={() => changeFilter(e)}>
-                { e }
-              </li>
+          <select
+            value={currFilter}
+            onChange={(e) => changeFilter(e.target.value)}
+            className="filter-select"
+            style={{padding: '5px 20px', border: 'none', outline: 'none', cursor: 'pointer'}}
+          >
+            <option value=''>All</option>
+            {categories.map((e) => (
+              <option key={e.id} value={e.name.toLowerCase()}>
+                {capitalizeFirst(e.name)}
+              </option>
             ))}
-          </ul>
+          </select>
         </div>
       </div>
       <section className="products page">

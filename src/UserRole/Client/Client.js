@@ -9,25 +9,26 @@ import About from "../../Pages/About";
 import Location from "../../Pages/Location";
 import Signup from "../../E-mail/Signup";
 import Login from "../../E-mail/Login";
-import NavBar from "../../Components/NavBar/Navbar"
+import NavBar from "../../Components/NavBar/Navbar";
+import BuyPage from "../../Pages/BuyPage";
 
 const Client = () => {
-  const [filter, setFilter] = useState("Choose filter");
-  const onMakeFilter = (f) => setFilter(f);
+  const [filter, setFilter] = useState('');
   return (
     <>
       <NavBar />
       <Routes>
         <Route
           path="/"
-          element={<HomePage onMakeFilter={onMakeFilter} />}
+          element={<HomePage currFilter={setFilter} />}
         />
-        <Route path="/products" element={<ProductsPage filter={filter} />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/location" element={<Location />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/products-page" element={<ProductsPage filter={filter} />} />
+        <Route path="/products-page/buy-page" element={<BuyPage />} />
       </Routes>
       <Footer />
     </>

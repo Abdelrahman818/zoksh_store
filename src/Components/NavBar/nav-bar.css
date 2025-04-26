@@ -50,6 +50,7 @@ ul.links::before {
 .welcome-msg {
 	font-size: 30px;
 	letter-spacing: 5px;
+	margin: auto;
 }
 .nav-content {
 	display: flex;

@@ -18,7 +18,7 @@ footer {
 footer .my-links {
   position: absolute;
   bottom: 50px;
-  left: calc(50% + 40px);
+  left: 50%;
   transform: translateX(-50%);
   width: 75%;
 }

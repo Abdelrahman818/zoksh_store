@@ -7,6 +7,9 @@ const Aside = ({ passData, role }) => {
   const [showUsers, setShowUsers] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
   const [addProducts, setAddProducts] = useState(false);
+  const [removeProduct, setRevomeProduct] = useState(false);
+  const [edit, setEdit] = useState(false);
+  const [manage, setManage] = useState(false);
 
   const toggleSidebar = () => {
     setShowSidebar((prev) => !prev);
@@ -17,21 +20,57 @@ const Aside = ({ passData, role }) => {
       setShowOrders(false);
       setShowUsers(false);
       setAddProducts(false);
+      setRevomeProduct(false);
+      setEdit(false);
+      setManage(false);
     } else if (select === "orders") {
       setShowMsgs(false);
       setShowOrders(true);
       setShowUsers(false);
       setAddProducts(false);
+      setRevomeProduct(false);
+      setEdit(false);
+      setManage(false);
     } else if (select === "admins") {
       setShowMsgs(false);
       setShowOrders(false);
       setShowUsers(true);
       setAddProducts(false);
+      setRevomeProduct(false);
+      setEdit(false);
+      setManage(false);
     } else if (select === "addProduct") {
       setShowMsgs(false);
       setShowOrders(false);
       setShowUsers(false);
       setAddProducts(true);
+      setRevomeProduct(false);
+      setEdit(false);
+      setManage(false);
+    } else if (select === "removeProduct") {
+      setShowMsgs(false);
+      setShowOrders(false);
+      setShowUsers(false);
+      setAddProducts(false);
+      setRevomeProduct(true);
+      setEdit(false);
+      setManage(false);
+    } else if (select === "edit") {
+      setShowMsgs(false);
+      setShowOrders(false);
+      setShowUsers(false);
+      setAddProducts(false);
+      setRevomeProduct(false);
+      setEdit(true);
+      setManage(false);
+    } else if (select === "manage") {
+      setShowMsgs(false);
+      setShowOrders(false);
+      setShowUsers(false);
+      setAddProducts(false);
+      setRevomeProduct(false);
+      setEdit(false);
+      setManage(true);
     }
   };
   const logout = () => {
@@ -44,12 +83,18 @@ const Aside = ({ passData, role }) => {
       orders: showOrders,
       admins: showUsers,
       addProducts,
+      removeProduct,
+      edit,
+      manage,
     });
   }, [
     showMsgs,
     showOrders,
     showUsers,
-    addProducts
+    addProducts,
+    removeProduct,
+    edit,
+    manage,
   ]);
   const toggleCollapse = () => {
     setCollapsed(!collapsed);
@@ -70,9 +115,10 @@ const Aside = ({ passData, role }) => {
             className={collapsed ? "edit-products collapsed" : "edit-products"}
           >
             <li onClick={() => enableSwitches("addProduct")}>Add</li>
-            <li>Remove</li>
-            <li>Modify</li>
+            <li onClick={() => enableSwitches("removeProduct")}>Remove</li>
+            <li onClick={() => enableSwitches("edit")}>Modify</li>
           </ul>
+          <h3 onClick={() => enableSwitches("manage")}>Manage products</h3>
           {role === "onr" ? (
             <h3
               style={{ color: "orange" }}

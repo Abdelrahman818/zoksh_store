@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import Loading from '../Components/Loading/Loading';
+import api from "../config";
 
 import './auth.css';
 
 const Signup = () => {
-  const link = 'http://localhost/zoksh-store/src/PHP/back.php';
   const navigate = useNavigate();
 
   const [name, setName] = useState('');
@@ -81,11 +81,11 @@ const Signup = () => {
     e.preventDefault();
     if (validate()) {
       setLoading(true);
-      sendData(link);
+      sendData();
     }
   };
-  const sendData = async (link) => {
-    fetch(link, {
+  const sendData = async () => {
+    fetch(api, {
       method: 'POST',
       body: JSON.stringify({
         type: 'signup',
@@ -96,7 +96,6 @@ const Signup = () => {
       })
     }).then(res => res.json())
       .then(json => {
-        console.log(json);
         if (json.msg === 'userAdded') {
           setAdded(true);
           localStorage.setItem('authToken', json.token);

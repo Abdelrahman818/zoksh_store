@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
-import Loading from "../../Components/Loading/Loading"
+import { useState, useEffect, useRef } from "react";
+import Loading from "../../Components/Loading/Loading";
+import api from "../../config";
 
 const AddProduct = () => {
   const [productName, setProductName] = useState("");
@@ -8,27 +9,29 @@ const AddProduct = () => {
   const [template, setTemplate] = useState(null);
   const [images, setImages] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [pType, setPType] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [pType, setPType] = useState("");
+  const [categories, setCategories] = useState([]);
+
+  const templateInputRef = useRef(null);
+  const imagesInputRef = useRef(null);
 
   const handleTemplateChange = (e) => {
     const file = e.target.files[0];
     if (file) setTemplate(file);
   };
+
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     setImages(files);
     const previews = files.map((file) => URL.createObjectURL(file));
     setImagePreviews(previews);
   };
+
   const handelTypeChange = (e) => {
     setPType(e.target.value);
-  }
-  useEffect(() => {
-    return () => {
-      imagePreviews.forEach((preview) => URL.revokeObjectURL(preview));
-    };
-  }, [imagePreviews]);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -42,14 +45,45 @@ const AddProduct = () => {
     formData.append("pType", pType);
     images.forEach((img) => formData.append("images[]", img));
 
-    const res = await fetch("http://localhost/zoksh-store/src/PHP/back.php", {
+    const res = await fetch(api, {
       method: "POST",
       body: formData,
     });
     const result = await res.json();
-    console.log(result);
+    if (result.msg === "uploaded") {
+      setProductName("");
+      setPrice("");
+      setInfo("");
+      setTemplate(null);
+      setImages([]);
+      setImagePreviews([]);
+      setPType("");
+      if (templateInputRef.current) templateInputRef.current.value = null;
+      if (imagesInputRef.current) imagesInputRef.current.value = null;
+    }
     setLoading(false);
   };
+  const capitalizeFirst = (str) => {
+    if (!str) return "";
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  };
+  useEffect(() => {
+    fetch(api, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ type: "getTypes" }),
+    })
+      .then((res) => res.json())
+      .then(setCategories)
+      .finally(() => setLoading(false));
+  }, []);
+  useEffect(() => {
+    return () => {
+      imagePreviews.forEach((preview) => URL.revokeObjectURL(preview));
+    };
+  }, [imagePreviews]);
 
   return (
     <>
@@ -73,12 +107,20 @@ const AddProduct = () => {
             required
           />
 
-          <select onChange={handelTypeChange}>
-            <option defaultValue='shirt'>Shirts</option>
-            <option defaultValue='hoodies'>Hoodies</option>
-            <option defaultValue='jackets'>Jackets</option>
-            <option defaultValue='pullOvers'>Pullovers</option>
-            <option defaultValue='sweatShirts'>Sweat shirts</option>
+          <select
+            required
+            value={pType}
+            onChange={handelTypeChange}
+            style={{ backgroundColor: "#222", color: "#eee" }}
+          >
+            <option value="" disabled>
+              Choose category
+            </option>
+            {categories.map((e) => (
+              <option key={e.id} value={e.name.toLowerCase()}>
+                {capitalizeFirst(e.name)}
+              </option>
+            ))}
           </select>
 
           <textarea
@@ -91,12 +133,14 @@ const AddProduct = () => {
           <label className="upload-label">Upload Product Template *</label>
           <div
             className="custom-image-upload"
-            onClick={() => document.getElementById("templateUploadInput").click()}
+            onClick={() => templateInputRef.current.click()}
           >
             <span className="plus-icon">+</span>
             <p>Click to upload product template</p>
           </div>
+
           <input
+            ref={templateInputRef}
             id="templateUploadInput"
             type="file"
             accept="image/*"
@@ -111,16 +155,17 @@ const AddProduct = () => {
               <img src={URL.createObjectURL(template)} alt="Template Preview" />
             </div>
           )}
-          
+
           <label className="upload-label">Upload Product Images *</label>
           <div
             className="custom-image-upload"
-            onClick={() => document.getElementById("imageUploadInput").click()}
+            onClick={() => imagesInputRef.current.click()}
           >
             <span className="plus-icon">+</span>
             <p>Click to upload product images</p>
           </div>
           <input
+            ref={imagesInputRef}
             id="imageUploadInput"
             type="file"
             accept="image/*"
