@@ -1,1 +1,1 @@
-let api = "https://zoksh.rf.gd/back.php";export default api;
+let api = "http://zoksh.atwebpages.com/back.php";export default api;
