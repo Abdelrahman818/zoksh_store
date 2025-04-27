@@ -26,9 +26,6 @@ const Login = () => {
   const sendData = async () => {
     const response = await fetch(api, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
       body: JSON.stringify({
         type: 'login',
         name: formData.name,
