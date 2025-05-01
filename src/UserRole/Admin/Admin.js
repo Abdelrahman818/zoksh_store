@@ -31,7 +31,7 @@ const Admin = ({ role, username }) => {
             {currComp.edit && <EditProducts />}
             {currComp.manage && <Manage />}
           </>
-        ):''
+        ):<DisplayMsgs />
         }
       </main>
     </>

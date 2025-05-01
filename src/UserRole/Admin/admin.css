@@ -19,7 +19,7 @@ aside.visible {
 
 .sidebar-toggle {
   display: none;
-  position: fixed;
+  position: absolute;
   top: 15px;
   left: 15px;
   background-color: #333;
@@ -101,7 +101,6 @@ main.admin {
   top: 0;
   right: 0;
   width: calc(100% - 250px);
-  padding: 0 15px;
   height: 100vh;
   overflow-y: auto;
 }
@@ -143,15 +142,21 @@ main.admin {
 
 .order-header {
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 1rem;
   font-weight: bold;
+  width: fit-content;
+  row-gap: 10px;
 }
 
 .order-name {
   font-size: 1.1rem;
-  color: #fff;
+  color: gold;
+  background-color: #222;
+  padding: 5px 30px;
+  width: 100%;
 }
 
 .order-price {
@@ -160,6 +165,7 @@ main.admin {
   background-color: #222;
   padding: 5px 20px;
   border-radius: 5px;
+  width: 100%;
 }
 
 .order-details p {
@@ -255,6 +261,8 @@ main.admin {
 
 section.clients-msgs {
   width: 100%;
+  height: fit-content;
+  padding-bottom: 60px;
 }
 
 .msg-cont {
@@ -470,13 +478,10 @@ section.clients-msgs {
 
 .edit-cont {
   padding: 2rem;
-  background: transparent;
   border-radius: 20px;
   color: white;
   max-width: 900px;
-  margin: 15px 0;
   width: 100%;
-  box-shadow: 0 0 20px #00000050;
   overflow: auto;
 }
 
@@ -489,6 +494,7 @@ section.clients-msgs {
   background: #2a2a2a;
   color: white;
   margin-bottom: 1.5rem;
+  margin-top: 50px;
   outline: none;
 }
 
@@ -500,6 +506,7 @@ section.clients-msgs {
 
 .product {
   background: #2f2f2f;
+  color: #eee;
   border-radius: 16px;
   padding: 1rem;
   display: flex;
@@ -507,6 +514,7 @@ section.clients-msgs {
   gap: 0.7rem;
   transition: all 0.3s ease;
   cursor: pointer;
+  width: 200px;
 }
 
 .product:hover {
@@ -517,7 +525,7 @@ section.clients-msgs {
 
 .product-img img {
   width: 100%;
-  height: 200px;
+  height: 100%;
   object-fit: cover;
   border-radius: 12px;
   border: 1px solid #444;
@@ -596,7 +604,7 @@ section.clients-msgs {
   border-radius: 12px;
   max-width: 700px;
   width: 100%;
-  margin: 25px 50px;
+  margin: auto;
   color: #fff;
   flex-direction: column;
   height: fit-content;
@@ -710,7 +718,6 @@ section.clients-msgs {
 .remove-product-cont {
   padding: 2rem;
   color: white;
-  background: #00000044;
   min-height: 100vh;
   height: fit-content;
   width: 100%;
@@ -842,7 +849,7 @@ section.clients-msgs {
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   max-width: 1000px;
-  margin: 20px auto;
+  margin: auto;
   height: fit-content;
 }
 
@@ -870,9 +877,18 @@ section.clients-msgs {
   background: #333;
 }
 
-.upload-box .selected-img {
-  max-width: 450px;
-  max-height: 450px;
+.selected-img {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.selected-img img {
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .upload-type-label {
@@ -1100,7 +1116,11 @@ section.clients-msgs {
   }
 
   .msg-cont {
-    margin-top: 90px;
+    margin-top: 30px;
+  }
+
+  section.clients-msgs {
+    margin-top: 50px;
   }
 
   .hidden {
@@ -1113,6 +1133,22 @@ section.clients-msgs {
 
   .remove-product-cont h3 {
     margin-top: 65px;
+  }
+
+  .add-product-container {
+    margin-top: 70px;
+    margin-bottom: 50px;
+  }
+
+  .del-btn {
+    padding: 12px 40px;
+    right: 20px;
+    top: 11px;
+  }
+
+  .selected-img img {
+    width: 90%;
+    max-width: 300px;
   }
 }
 

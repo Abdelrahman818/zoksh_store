@@ -44,3 +44,8 @@ footer i:hover {
 
 /* Responsive */
 
+@media(max-width: 400px) {
+  .copy-right {
+    font-size: 15px;
+  }
+}

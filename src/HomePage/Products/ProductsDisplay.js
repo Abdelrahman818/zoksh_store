@@ -45,7 +45,7 @@ const DisplayProducts = ({ filter }) => {
       {products
         .filter((e) => {
           if (!filter || filter === "") return true;
-          return e.product_type.toLowerCase() === filter;
+          return e.product_type.toLowerCase() === filter.toLowerCase();
         }).map((e) => {
         return (
           <div
@@ -55,7 +55,7 @@ const DisplayProducts = ({ filter }) => {
           >
             <div className="product-img">
               <img
-                src={`http://localhost/zoksh-store/src/PHP/${e.temp}`}
+                src={e.temp}
                 alt="No img"
               />
             </div>

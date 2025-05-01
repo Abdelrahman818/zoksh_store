@@ -70,10 +70,10 @@ const Orders = () => {
         </div>
 
         <div className="orders-grid">
-          {filteredOrders.map((order) => (
+          {filteredOrders.reverse().map((order) => (
             <div className="order-card" key={order.order_id}>
               <div className="order-header">
-                <span className="order-name">{order.productName}</span>
+                <span className="order-name">{order.product_name}</span>
                 <span className="order-price">
                   <span className="price">
                     {order.price} × {order.quantity} = {order.price*order.quantity}

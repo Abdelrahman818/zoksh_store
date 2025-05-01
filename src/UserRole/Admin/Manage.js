@@ -10,15 +10,10 @@ const Manage = () => {
   const [tempPrev, setTempPrev] = useState(null);
   const [delConf, setDelConf] = useState(false);
   const [selectedCate, setSelectedCate] = useState(null);
-  console.log('Manage categories...');
 
   useEffect(() => {
     getTypes();
   }, []);
-  useEffect(() => {
-    console.log('Categories: ');
-    console.log(types);
-  }, [types]);
   const getTypes = () => {
     fetch(api, {
       method: "POST",
@@ -103,7 +98,7 @@ const Manage = () => {
             )}
           </div>
           <div className="add-type-box">
-            <form>
+            <form onSubmit={addCategory}>
               <input
                 type="text"
                 className="type-input"
@@ -112,7 +107,7 @@ const Manage = () => {
                 onChange={(e) => setCatName(e.target.value)}
                 required
               />
-              <button className="add-btn" onClick={addCategory}>
+              <button className="add-btn">
                 Add category
               </button>
             </form>

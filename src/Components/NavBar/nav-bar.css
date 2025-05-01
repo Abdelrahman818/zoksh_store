@@ -131,9 +131,9 @@ ul.links::before {
 }
 
 /* Responsive */
-@media (max-width: 599px) {
+@media (max-width: 650px) {
   nav {
-    height: auto;
+    height: 70px;
     padding: 10px 20px;
   }
 

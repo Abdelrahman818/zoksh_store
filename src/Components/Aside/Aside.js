@@ -72,6 +72,7 @@ const Aside = ({ passData, role }) => {
       setEdit(false);
       setManage(true);
     }
+    if (!collapsed) setCollapsed(true);
   };
   const logout = () => {
     localStorage.removeItem("authToken");
@@ -102,7 +103,7 @@ const Aside = ({ passData, role }) => {
 
   return (
     <>
-      <div className={showSidebar ? "parent bg-dark div" : "div"}></div>
+      <div className={showSidebar ? "parent bg-dark div" : "div"} onClick={toggleSidebar}></div>
       <button className="sidebar-toggle" onClick={toggleSidebar}>
         ☰ Menu
       </button>

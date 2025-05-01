@@ -22,7 +22,7 @@ const DisplayMsgs = () => {
       { loading && <Loading /> }
       <section className="clients-msgs">
         { msgs.length > 0? (
-          msgs.map((e, i) => {
+          msgs.reverse().map((e, i) => {
             return <ClientsMsgs 
               key={i}
               name={e.name}

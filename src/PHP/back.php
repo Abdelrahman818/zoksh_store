@@ -1,15 +1,24 @@
 <?php
 
-  header("Access-Control-Allow-Origin: *");
-  header("Access-Control-Allow-Credentials: true");
-  header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-  header("Access-Control-Allow-Headers: Content-Type, Authorization");
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
+header("Access-Control-Allow-Credentials: true");
+header('Content-Type: application/json; charset=utf-8');
 
-  require 'vendor/autoload.php';
-  use Firebase\JWT\JWT;
-  use Firebase\JWT\Key;
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+  http_response_code(200);
+  exit();
+}
+require 'vendor/autoload.php';
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 
   if ($_SERVER['REQUEST_METHOD'] === "POST") {
+    $uploadDir   = __DIR__ . '/upload/';
+    $webBasePath = 'https://zoksh.rf.gd/upload/';
+    if (!file_exists($uploadDir)) mkdir($uploadDir, 0755, true);
+
     $postedData = file_get_contents('php://input');
     $decoded = json_decode($postedData, true);
     $type = '';
@@ -70,7 +79,7 @@
       $name = $decoded['name'];
       $pwd = $decoded['pwd'];
       $sql = "SELECT * FROM users WHERE name = :name";
-      $res = DBConnection($sql, ['name' => $name]);
+      $res = DBConnection($sql, [':name' => $name]);
 
       if (!empty($res)) {
         $storedHash = $res[0]['pwd'];
@@ -121,14 +130,14 @@
         FROM
           contacts
       ";
-      echo json_encode(DBConnection($sql));
+      echo json_encode(DBConnection($sql), JSON_UNESCAPED_UNICODE);
     } else if ($type === 'getOrders') {
       $sql = "SELECT * FROM orders";
-      echo json_encode(DBConnection($sql));
+      echo json_encode(DBConnection($sql), JSON_UNESCAPED_UNICODE);
     } else if ($type === 'updateStatus') {
       $id = $decoded['id'];
       $status = $decoded['status'];
-      $sql = "UPDATE `orders` SET `order_status` = :status WHERE `orders`.`order_id` = :id;";
+      $sql = "UPDATE `orders` SET `order_status` = :status WHERE `orders`.`order_id` = :id";
       DBConnection($sql, [
         ':id' => $id,
         ':status' => $status
@@ -145,65 +154,92 @@
         FROM
           users
       ";
-      echo json_encode(DBConnection($sql));
+      echo json_encode(DBConnection($sql), JSON_UNESCAPED_UNICODE);
     } else if ($type === 'upload') {
-      $productName = $_POST['productName'] ?? '';
-      $price = $_POST['price'] ?? '';
-      $info = $_POST['info'] ?? '';
-      $pType = $_POST['pType'] ?? '';
-      $sql1 = "
-        INSERT INTO templates (id, img, name, price, infos, product_type)
-        VALUES (NULL, :img, :name, :price, :infos, :product_type)
-      ";
-      $sql2 = "
-        INSERT INTO imgs (id, temp_id, img)
-        VALUES (NULL, :temp_id, :img)
-      ";
-      $uploadDir = __DIR__ . '/upload/';
-      if (!file_exists($uploadDir)) {
-        mkdir($uploadDir, 0755, true);
-      }
-      $templateFile = $_FILES['template'] ?? null;
-      $templatePath = '';
-      if ($templateFile && $templateFile['error'] === 0) {
-        $templateName = uniqid('template_') . '_' . basename($templateFile['name']);
-        $templatePath = 'upload/' . $templateName;
-        move_uploaded_file($templateFile['tmp_name'], $uploadDir . $templateName);
-      }
-      $imagePaths = [];
-      if (isset($_FILES['images'])) {
-        foreach ($_FILES['images']['tmp_name'] as $index => $tmpName) {
-          if ($_FILES['images']['error'][$index] === 0) {
-            $imageName = uniqid('img_') . '_' . basename($_FILES['images']['name'][$index]);
-            $fullPath = $uploadDir . $imageName;
-            move_uploaded_file($tmpName, $fullPath);
-            $imagePaths[] = 'upload/' . $imageName;
-          }
+        $productName = $_POST['productName'] ?? '';
+        $price       = $_POST['price']       ?? '';
+        $info        = $_POST['info']        ?? '';
+        $pType       = $_POST['pType']       ?? '';
+
+        $uploadDir    = __DIR__ . '/upload/';
+        $webBasePath  = 'https://zoksh.rf.gd/upload/'; // Change to your actual URL
+
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true); // Create uploads folder if not exist
         }
-      }
-      try {
-        $db = new PDO("mysql:host=localhost;dbname=zoksh_store", "root", "");
-        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $stmt = $db->prepare($sql1);
-        $stmt->execute([
-          ':img' => $templatePath,
-          ':name' => $productName,
-          ':price' => $price,
-          ':infos' => $info,
-          ':product_type' => $pType
-        ]);
-        $templateId = $db->lastInsertId();
-      } catch (PDOException $e) {
-        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
-        exit;
-      }
-      foreach ($imagePaths as $imgPath) {
-        DBConnection($sql2, [
-          ':temp_id' => $templateId,
-          ':img' => $imgPath
-        ]);
-      }
-      echo json_encode(['msg' => 'uploaded']);
+
+        // 3) Move the main template image
+        $templatePath = '';
+        if (!empty($_FILES['template']) && $_FILES['template']['error'] === 0) {
+            $originalName = basename($_FILES['template']['name']);
+            $safeName = preg_replace('/[^A-Za-z0-9_\-\.]/', '_', $originalName);
+            $fname = uniqid('template_') . '_' . $safeName;
+            if (move_uploaded_file($_FILES['template']['tmp_name'], $uploadDir . $fname)) {
+                $templatePath = $webBasePath . $fname;
+            }
+        }
+
+        // 4) Move any gallery images
+        $imagePaths = [];
+        if (isset($_FILES['images'])) {
+            foreach ($_FILES['images']['tmp_name'] as $i => $tmp) {
+                if ($_FILES['images']['error'][$i] === 0) {
+                    $originalName = basename($_FILES['images']['name'][$i]);
+                    $safeName = preg_replace('/[^A-Za-z0-9_\-\.]/', '_', $originalName);
+                    $iname = uniqid('img_') . '_' . $safeName;
+                    if (move_uploaded_file($tmp, $uploadDir . $iname)) {
+                        $imagePaths[] = $webBasePath . $iname;
+                    }
+                }
+            }
+        }
+
+        try {
+            $pdo = new PDO(
+                "mysql:host=sql201.infinityfree.com;dbname=if0_38811111_zoksh_store;charset=utf8mb4",
+                "if0_38811111",
+                "DU9OhrTVWyOY",
+                [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+            );
+
+            // Insert template info
+            $stmt1 = $pdo->prepare("
+                INSERT INTO templates (img, name, price, infos, product_type)
+                VALUES (:img, :name, :price, :infos, :product_type)
+            ");
+            $stmt1->execute([
+                ':img'          => $templatePath,
+                ':name'         => $productName,
+                ':price'        => $price,
+                ':infos'        => $info,
+                ':product_type' => $pType
+            ]);
+            $templateId = $pdo->lastInsertId();
+
+            // Insert gallery images
+            $stmt2 = $pdo->prepare("
+                INSERT INTO imgs (temp_id, img)
+                VALUES (:temp_id, :img)
+            ");
+            foreach ($imagePaths as $imgPath) {
+                $stmt2->execute([
+                    ':temp_id' => $templateId,
+                    ':img'     => $imgPath
+                ]);
+            }
+
+            // Success
+            echo json_encode([
+                'status' => 'success',
+                'msg'    => 'uploaded',
+                'id'     => $templateId
+            ]);
+        } catch (PDOException $e) {
+            echo json_encode([
+                'status' => 'error',
+                'msg'    => 'Database error: ' . $e->getMessage()
+            ]);
+        }
     } else if ($type === 'updateRole') {
       $id = $decoded['id'];
       $role = $decoded['newRole'];
@@ -213,19 +249,13 @@
         ':id' => $id
       ]);
     } else if ($type === 'getProducts') {
-      $templates = DBConnection("SELECT id, img, name, price, infos, product_type FROM templates");
-      $images = DBConnection("SELECT temp_id, img FROM imgs");
-      foreach ($templates as &$template) {
-        $template['temp'] = $template['img'];
-        unset($template['img']);
-        $matchedImgs = array_filter($images, function ($img) use ($template) {
-          return $img['temp_id'] == $template['id'];
-        });
-        $template['imgs'] = array_values(array_map(function ($img) {
-          return $img['img'];
-        }, $matchedImgs));
-      }
-      echo json_encode($templates);
+        $templates = DBConnection("SELECT id, img AS temp, name, price, infos, product_type FROM templates");
+        $images    = DBConnection("SELECT temp_id, img FROM imgs");
+        foreach ($templates as &$t) {
+            $matched = array_filter($images, fn($i) => $i['temp_id'] == $t['id']);
+            $t['imgs'] = array_values(array_map(fn($i) => $i['img'], $matched));
+        }
+        echo json_encode($templates, JSON_UNESCAPED_UNICODE);
     } else if ($type === 'createOrder') {
       $product_id = $decoded['product_id'];
       $product_name = $decoded['product_name'];
@@ -261,24 +291,32 @@
         ':quantity' => $quantity
       ]);
       echo json_encode(['msg' => 'ordered']);
-    } else if ($type === 'remvoeProduct') { 
-      foreach ($decoded['data'] as $product) {
-        $id = $product['id'];
-        $temp = $product['temp'];
-        $imgs = $product['imgs'];
-    
-        $sql1 = "DELETE FROM templates WHERE id = :id";
-        $sql2 = "DELETE FROM imgs WHERE temp_id = :id";
-    
-        DBConnection($sql1, [':id' => $id]);
-        DBConnection($sql2, [':id' => $id]);
-    
-        unlink("./$temp");
-        foreach ($imgs as $img) {
-          unlink("./$img");
+    } else if ($type === 'remvoeProduct') {
+        foreach ($decoded['data'] as $p) {
+            $id   = $p['id'];
+            $temp = $p['temp'];   // e.g. "./upload/foo.jpg"
+            $imgs = $p['imgs'];   // array of "./upload/bar.jpg", etc.
+
+            // 1) Remove DB rows
+            DBConnection("DELETE FROM imgs WHERE temp_id = :id",      [':id' => $id]);
+            DBConnection("DELETE FROM templates WHERE id = :id",      [':id' => $id]);
+
+            // 2) Delete main image file
+            $mainPath = $uploadDir . basename($temp);
+            if (file_exists($mainPath)) {
+                unlink($mainPath);
+            }
+
+            // 3) Delete each gallery image file
+            foreach ($imgs as $img) {
+                $imgPath = $uploadDir . basename($img);
+                if (file_exists($imgPath)) {
+                    unlink($imgPath);
+                }
+            }
         }
-      }
-      echo json_encode(['msg' => 'removed']);
+
+        echo json_encode(['status' => 'success', 'msg' => 'removed']);
     } else if ($type === 'editUpdate') {
       $id = $decoded['id'];
       $name = $decoded['name'];
@@ -298,82 +336,89 @@
       echo json_encode(['msg' => 'updated']);
     } else if ($type === 'getTypes') {
       $sql = "SELECT * FROM products_types";
-      echo json_encode(DBConnection($sql));
+      echo json_encode(DBConnection($sql), JSON_UNESCAPED_UNICODE);
     } else if ($type === 'addCategory') {
-      $name = $_POST['name'];
-      $img = $_FILES['temp'];
-      $currDir = __DIR__ . '/upload/';
-      $uniqueName = "category_" . uniqid() . ".jpg";
-      $filePath = $currDir . $uniqueName;
-      $file = "./upload/" . $uniqueName;
-      $sql = "
-        INSERT INTO
-        products_types (id, name, temp)
-        VALUES (NULL, :name, :temp)
-      ";
-      if (!file_exists($currDir)) mkdir($currDir, 0777, true);
-
-      move_uploaded_file($img['tmp_name'], $filePath);
-      DBConnection($sql, [':name' => $name, ':temp' => $file]);
-
-      echo json_encode(['msg' => 'added']);
-    } else if ($type === 'cateDel') {
-      $id = $decoded['id'];
-      $sql1 = "SELECT name, temp FROM products_types WHERE id = :id";
-      $sql2 = "DELETE FROM products_types WHERE id = :id";
-      $sql3 = "SELECT id, img FROM templates WHERE product_type = :type";
-      $sql4 = "DELETE FROM templates WHERE product_type = :type";
-      $sql5 = "DELETE FROM imgs WHERE temp_id = :temp_id";
-      $sql6 = "SELECT img FROM imgs WHERE temp_id = :temp_id";
-      $result = DBConnection($sql1, [':id' => $id]);
-      $productType = $result[0]['name'] ?? null;
-      $categoryTempImg = $result[0]['temp'] ?? null;
-      $basePath = realpath(__DIR__ . "/upload/");
-      $templates = '';
-
-      if (!$basePath)
-        die(json_encode(['error' => 'Uploads directory not found']));
-
-      if ($categoryTempImg) {
-        $categoryImgPath = $basePath . '/' . basename($categoryTempImg);
-        if (file_exists($categoryImgPath)) {
-          unlink($categoryImgPath);
-        }
-      }
-
-      if ($productType) {
-        DBConnection($sql2, [':id' => $id]);
-        $templates = DBConnection($sql3, [':type' => $productType]);
-        DBConnection($sql4, [':type' => $productType]);
-
-        foreach ($templates as $template) {
-          $tempId = $template['id'];
-          $imgs = DBConnection($sql6, [':temp_id' => $tempId]);
-          unlink($template['img']);
-
-          foreach ($imgs as $img) {
-            $imgPath = $img['img'];
-            $fullImgPath = $basePath . '/' . basename($imgPath);
-            if (file_exists($fullImgPath)) {
-              unlink($fullImgPath);
+        $name = $_POST['name'] ?? '';
+        $file = $_FILES['temp'] ?? null;
+        $catImg = '';
+        if ($file && $file['error'] === 0) {
+            $uname = 'category_' . uniqid() . '_' . basename($file['name']);
+            if (move_uploaded_file($file['tmp_name'], $uploadDir . $uname)) {
+                $catImg = './upload/' . $uname;
             }
-          }
-          DBConnection($sql5, [':temp_id' => $tempId]);
         }
-      }
-      echo json_encode(['msg' => 'deleted']);
+        DBConnection(
+            "INSERT INTO products_types (name, temp)
+            VALUES (:name, :temp)",
+            [':name' => $name, ':temp' => $catImg]
+        );
+        echo json_encode(['status' => 'success', 'msg' => 'added']);
+    } else if ($type === 'cateDel') {
+        $id = $decoded['id'] ?? null;
+        if (!$id) {
+            echo json_encode(['error' => 'No category ID']);
+            exit;
+        }
+
+        // 1) Fetch category info
+        $res   = DBConnection("SELECT name, temp FROM products_types WHERE id = :id", [':id' => $id]);
+        $cat   = $res[0] ?? [];
+        $cTemp = $cat['temp'] ?? null;    // e.g. "./upload/cat123.jpg"
+        $name  = $cat['name'];
+
+        // 2) Delete category image
+        if ($cTemp) {
+            $catImgPath = $uploadDir . basename($cTemp);
+            if (file_exists($catImgPath)) {
+                unlink($catImgPath);
+            }
+        }
+
+        // 3) Delete category row
+        DBConnection("DELETE FROM products_types WHERE id = :id", [':id' => $id]);
+
+        // 4) Fetch all templates of this type
+        $tpls = DBConnection(
+            "SELECT id, img FROM templates WHERE product_type = :type",
+            [':type' => $name]
+        );
+
+        foreach ($tpls as $t) {
+            $tid  = $t['id'];
+            $img0 = $t['img'];  // e.g. "./upload/foo.jpg"
+
+            // 5) Delete template main image
+            $tplImgPath = $uploadDir . basename($img0);
+            if (file_exists($tplImgPath)) {
+                unlink($tplImgPath);
+            }
+
+            // 6) Delete gallery images for this template
+            $gImgs = DBConnection("SELECT img FROM imgs WHERE temp_id = :tid", [':tid' => $tid]);
+            foreach ($gImgs as $gi) {
+                $gImgPath = $uploadDir . basename($gi['img']);
+                if (file_exists($gImgPath)) {
+                    unlink($gImgPath);
+                }
+            }
+
+            // 7) Delete DB entries for this template
+            DBConnection("DELETE FROM imgs WHERE temp_id = :tid",   [':tid' => $tid]);
+            DBConnection("DELETE FROM templates WHERE id = :tid",   [':tid' => $tid]);
+            echo json_encode(['msg' => 'deleted']);
+        }
     } else {
-      echo json_encode($decoded);
+      echo json_encode($decoded, JSON_UNESCAPED_UNICODE);
     }
   }
   function DBConnection($sql, $bindings=[]) {
-    $host = "localhost";
-    $dbname = "zoksh_store";
-    $username = "root";
-    $password = "";
+    $host = "sql201.infinityfree.com";
+    $dbname = "if0_38811111_zoksh_store";
+    $username = "if0_38811111";
+    $password = "DU9OhrTVWyOY";
 
     try {
-      $db = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+      $db = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
       $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
       
       $stmt = $db->prepare($sql);

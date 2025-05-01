@@ -9,8 +9,7 @@ const ClientsMsgs = (props) => {
 
         <div className="msg-user-info">
           <p className="user-name">Name: <strong>{props.name}</strong></p>
-          <p className="user-phone">Phone: <strong>{props.phone}</strong></p>
-          <p className="user-email">Email: <strong>{props.email}</strong></p>
+          <p className="user-phone">Phone: <strong>{props.phone}</strong></p>\
         </div>
 
         <div className="msg-body">

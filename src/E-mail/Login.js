@@ -23,19 +23,18 @@ const Login = () => {
       [name]: value,
     });
   };
-  const sendData = () => {
-    let response;
-    fetch(api, {
+  const sendData = async () => {
+    const response = await fetch(api, {
       method: 'POST',
       body: JSON.stringify({
         type: 'login',
         name: formData.name,
         pwd: formData.password,
       }),
-    }).then(res => res.json())
-      .then(json => response = json)
+    });
+    const json = await response.json();
     setLoading(false);
-    return response;
+    return json;
   };
   const validate = async () => {
     const newErrors = {};

@@ -54,7 +54,6 @@ const EditProducts = () => {
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
   const update = (e) => {
     e.preventDefault();
     setLoading(true);
@@ -82,7 +81,6 @@ const EditProducts = () => {
           });
       });
   };
-
   const handelChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -90,11 +88,11 @@ const EditProducts = () => {
       [name]: value,
     });
   };
-
   function capitalizeFirst(str) {
     if (!str) return "";
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-  }
+  };
+  const imgPath = api.replace("/back.php", "");
 
   return (
     <>
@@ -155,6 +153,7 @@ const EditProducts = () => {
       )}
 
       <div className="edit-cont">
+        <h3>Edit products</h3>
         <input
           id="edit-search"
           type="text"
@@ -172,7 +171,7 @@ const EditProducts = () => {
             >
               <div className="product-img">
                 <img
-                  src={`http://localhost/zoksh-store/src/PHP/${e.temp}`}
+                  src={e.temp}
                   alt=""
                 />
               </div>

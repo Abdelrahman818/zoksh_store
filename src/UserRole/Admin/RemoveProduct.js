@@ -84,7 +84,7 @@ const RemoveProduct = () => {
                 </div>
                 <div className="product-img-remove">
                   <img
-                    src={`http://localhost/zoksh-store/src/PHP/${e.temp}`}
+                    src={e.temp}
                     alt="corrupted img"
                   />
                 </div>

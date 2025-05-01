@@ -95,7 +95,7 @@ const BuyPage = () => {
               via a phone call before shipping
             </p>
           </span>
-          <span className="final-price">Total: {data.total_price} LE</span>
+          <span className="final-price">Total: {data.total_price?data.total_price:0} LE</span>
           <form className="buy-infos" onSubmit={handleSubmit}>
             <input
               name="client_name"
@@ -140,7 +140,6 @@ const BuyPage = () => {
             <input
               name="quantity"
               type="number"
-              min="1"
               required
               value={data.quantity}
               onChange={handleChange}

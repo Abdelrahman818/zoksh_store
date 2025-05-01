@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { OrderContext } from "../../context";
 import { Link } from "react-router-dom";
+import api from "../../config";
 
 const ProductShowCase = (props) => {
 
@@ -13,7 +14,7 @@ const ProductShowCase = (props) => {
   }, [setOrderData, props.data]);
 
   return (
-    <div className="product-show-case bg-dark">
+    <div className="product-show-case parent bg-dark">
       <div className="product-window">
         <div className="cross" onClick={() => props.onClose()}>
           <span className="r"></span>
@@ -22,7 +23,7 @@ const ProductShowCase = (props) => {
         <div className="imgs">
           <div className="selected-img">
             <img
-              src={`http://localhost/zoksh-store/src/PHP/${selectedImg}`}
+              src={selectedImg}
               alt="can't load the img"
             />
           </div>
@@ -30,7 +31,7 @@ const ProductShowCase = (props) => {
             {props.data.imgs.map((img, index) => (
               <img
                 key={index}
-                src={`http://localhost/zoksh-store/src/PHP/${img}`}
+                src={img}
                 alt=""
                 onClick={() => setSelectedImg(img)}
                 className={selectedImg === img ? "active-img" : ""}

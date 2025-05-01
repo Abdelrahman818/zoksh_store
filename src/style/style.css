@@ -42,6 +42,12 @@ body {
 	cursor: default !important;
 	margin-left: 5px !important;
 }
+.hide {
+	opacity: 0 !important;
+}
+.none {
+	display: none !important;
+}
 .danger {
 	color: red !important;
 }

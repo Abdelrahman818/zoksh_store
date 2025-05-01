@@ -7,6 +7,7 @@ const AvailbleProducts = ({ getFilter }) => {
   const [flipped, setFlipped] = useState({});
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const imgApi = api.replace('/back.php', '');
 
   useEffect(() => {
     fetch(api, {
@@ -41,7 +42,9 @@ const AvailbleProducts = ({ getFilter }) => {
             >
               <div className="front">
                 <h3 className="product-title">{e.name}</h3>
-                <img src={`http://localhost/zoksh-store/src/PHP/${e.temp}`} alt="" />
+                <div className="img-cont">
+                  <img src={imgApi + e.temp.slice(1)} alt="" />
+                </div>
               </div>
               <div className="back">
                 <p>Crafted for comfort. Designed for distinction.</p>

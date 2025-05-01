@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Loading from '../Components/Loading/Loading';
+import Loading from "../Components/Loading/Loading";
 import api from "../config";
 
 import "./contact.css";
@@ -12,7 +12,6 @@ const ContactPage = () => {
   const [errs, setErrs] = useState({
     nameErr: false,
     phoneErr: false,
-    msg: false,
   });
   const [formData, setFormData] = useState({
     type: "contact",
@@ -30,30 +29,21 @@ const ContactPage = () => {
     validation();
   };
   const validation = () => {
-    const nameRe = /[a-z]{3,16}/i;
-    const phoneRe = /[0-9]{11,12}/;
-    const msgRe = /[a-z]{4,255}/i;
+    const hasNumbers = /[0-9]/;
+    const hasEnglishLetters = /[a-z]/i;
+    const hasArabicLetters = /[\u0600-\u06FF]/;
 
-    let obj = {};
-    let nameValidation;
-    let phoneValidation;
-    let msgValidation;
+    const nameValidation = !hasNumbers.test(formData.user);
+    const phoneValidation =
+      !hasEnglishLetters.test(formData.phone) &&
+      !hasArabicLetters.test(formData.phone);
 
-    if (formData.user.match(nameRe)) nameValidation = false;
-    else nameValidation = true;
-    if (formData.phone.match(phoneRe)) phoneValidation = false;
-    else phoneValidation = true;
-    if (formData.msg.match(msgRe)) msgValidation = false;
-    else msgValidation = true;
+    setErrs({
+      name: !nameValidation,
+      phone: !phoneValidation,
+    });
 
-    obj.name = nameValidation;
-    obj.phone = phoneValidation;
-    obj.msg = msgValidation;
-
-    setErrs(obj);
-    if (!nameValidation && !phoneValidation && !msgValidation) {
-      sendData();
-    }
+    if (nameValidation && phoneValidation) sendData();
   };
   const sendData = () => {
     setLoading(true);
@@ -71,18 +61,16 @@ const ContactPage = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({...formData, date}),
-    })
-      .then((res) => res.json())
-      .finally(() => {
-        setLoading(false);
-        navigate('/');
-      });
+      body: JSON.stringify({ ...formData, date }),
+    }).finally(() => {
+      setLoading(false);
+      navigate("/");
+    });
   };
 
   return (
     <>
-      { loading && <Loading /> }
+      {loading && <Loading />}
       <div className="contact-page">
         <section className="contact-form">
           <h2>Send Us a Message</h2>
@@ -111,7 +99,9 @@ const ContactPage = () => {
               onChange={handleChange}
               required
             >
-              <option value="" disabled>Select a Subject</option>
+              <option value="" disabled>
+                Select a Subject
+              </option>
               <option value="Product Inquiry">Product Inquiry</option>
               <option value="Order Status">Order Status</option>
               <option value="Returns & Exchanges">Returns & Exchanges</option>
@@ -124,7 +114,6 @@ const ContactPage = () => {
               placeholder="Your Message"
               required
             />
-            {errs.msg && <div className="err">The message is very long</div>}
             <button type="submit">Submit</button>
           </form>
         </section>
